@@ -44,8 +44,35 @@ module perf_counters (
 );
   localparam logic [6:0] RegOffset = riscv::CSR_ML1_ICACHE_MISS >> 5;
 
-  logic [riscv::CSR_MIF_EMPTY : riscv::CSR_ML1_ICACHE_MISS][63:0] perf_counter_d, perf_counter_q;
+ (* MARK_DEBUG = "TRUE" *) logic [riscv::CSR_MIF_EMPTY : riscv::CSR_ML1_ICACHE_MISS][63:0] perf_counter_d, perf_counter_q;//,perf_counter_d_slow;//last line added by shayan
+//added by shayan/////////////////////////////
+(* MARK_DEBUG = "TRUE" *) logic [14:0] ila_counter;
+(* MARK_DEBUG = "TRUE" *) logic ila_read;
+//wire ila_clk;
+//(* MARK_DEBUG = "TRUE" *) clk_ILA clk_ILA
+// (
+//  // Clock out ports
+//  .clk_out5(ila_clk),
+//  .reset(1'b0),
+//  .clk_in1(clk_i)
+// );
+ 
+ always_ff @(posedge clk_i) begin : perf_counters_read
+   if (!rst_ni) begin
+    ila_read<=1'b0;
+    ila_counter<=0;
+   end else if (ila_read) begin
+    ila_read<=1'b0;
+    ila_counter<=0;
+   end else if (ila_counter==15'd30000) begin
+    ila_read<=1;
+   end else begin
+     ila_counter<=ila_counter+1;
+   end
 
+ end
+ 
+ /////////////////////////////////
   always_comb begin : perf_counters
     perf_counter_d = perf_counter_q;
     data_o = 'b0;
