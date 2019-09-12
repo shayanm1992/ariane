@@ -44,7 +44,8 @@ module perf_counters (
 );
   localparam logic [6:0] RegOffset = riscv::CSR_ML1_ICACHE_MISS >> 5;
 
- (* MARK_DEBUG = "TRUE" *) logic [riscv::CSR_MIF_EMPTY : riscv::CSR_ML1_ICACHE_MISS][63:0] perf_counter_d, perf_counter_q;//,perf_counter_d_slow;//last line added by shayan
+ (* MARK_DEBUG = "TRUE" *) logic [riscv::CSR_MIF_EMPTY : riscv::CSR_ML1_ICACHE_MISS][63:0] perf_counter_d;//,perf_counter_d_slow;//last line added by shayan
+ logic [riscv::CSR_MIF_EMPTY : riscv::CSR_ML1_ICACHE_MISS][63:0]  perf_counter_q;//,perf_counter_d_slow;//last line added by shayan
 //added by shayan/////////////////////////////
 (* MARK_DEBUG = "TRUE" *) logic [14:0] ila_counter;
 (* MARK_DEBUG = "TRUE" *) logic ila_read;

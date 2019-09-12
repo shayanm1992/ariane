@@ -62,7 +62,17 @@ module ariane #(
   fetch_entry_t             fetch_entry_if_id;
   logic                     fetch_valid_if_id;
   logic                     fetch_ready_id_if;
-
+  //added by shayan
+  (* MARK_DEBUG = "TRUE" *) logic [63:0] ila_address;
+  (* MARK_DEBUG = "TRUE" *) logic [31:0] ila_instruction;
+  (* MARK_DEBUG = "TRUE" *) logic [63:0] ila_predict_address;
+  (* MARK_DEBUG = "TRUE" *) logic [2:0]  ila_cf;
+  always_comb begin: ila_instance
+    ila_address=fetch_entry_if_id.address;
+    ila_instruction=fetch_entry_if_id.instruction;
+    ila_predict_address=fetch_entry_if_id.branch_predict.predict_address;
+    ila_cf=fetch_entry_if_id.branch_predict.cf;
+  end
   // --------------
   // ID <-> ISSUE
   // --------------
@@ -70,13 +80,22 @@ module ariane #(
   logic                     issue_entry_valid_id_issue;
   logic                     is_ctrl_fow_id_issue;
   logic                     issue_instr_issue_id;
-
+  //added by shayan
+  (* MARK_DEBUG = "TRUE" *) scoreboard_entry_t ila_issue_entry_id_issue;
+  always_comb begin: ila_instance2
+    ila_issue_entry_id_issue=issue_entry_id_issue;
+  end
   // --------------
   // ISSUE <-> EX
   // --------------
   fu_data_t                 fu_data_id_ex;
   logic [63:0]              pc_id_ex;
   logic                     is_compressed_instr_id_ex;
+  //added by shayan
+  (* MARK_DEBUG = "TRUE" *) fu_data_t ila_fu_data_id_ex;
+  always_comb begin: ila_instance3
+     ila_fu_data_id_ex=fu_data_id_ex;
+  end
   // fixed latency units
   logic                     flu_ready_ex_id;
   logic [TRANS_ID_BITS-1:0] flu_trans_id_ex_id;
