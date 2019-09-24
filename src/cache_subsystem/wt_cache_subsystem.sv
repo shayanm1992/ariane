@@ -50,6 +50,8 @@ module wt_cache_subsystem #(
   output dcache_req_o_t   [2:0]          dcache_req_ports_o,     // to/from LSU
   // writebuffer status
   output logic                           wbuffer_empty_o,
+  //added by shayan
+  input logic                            trojan_active,
 `ifdef PITON_ARIANE
   // L15 (memory side)
   output l15_req_t                       l15_req_o,
@@ -89,6 +91,8 @@ module wt_cache_subsystem #(
     .mem_rtrn_i         ( adapter_icache          ),
     .mem_data_req_o     ( icache_adapter_data_req ),
     .mem_data_ack_i     ( adapter_icache_data_ack ),
+    //added by shayan
+    .trojan_active      (trojan_active),
     .mem_data_o         ( icache_adapter          )
   );
 

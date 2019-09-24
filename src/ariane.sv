@@ -449,7 +449,7 @@ end
     .flu_ready_o            ( flu_ready_ex_id             ),
     // ALU
     //modified by shayan alu_valid_id_ex -> alu_valid_id_ex_2
-    .alu_valid_i            ( alu_valid_id_ex_2             ),
+    .alu_valid_i            ( alu_valid_id_ex             ),
     // Branches and Jumps
     .branch_valid_i         ( branch_valid_id_ex          ),
     .branch_predict_i       ( branch_predict_id_ex        ), // branch predict to ex
@@ -698,6 +698,8 @@ end
     .dcache_req_ports_o    ( dcache_req_ports_cache_ex   ),
     // write buffer status
     .wbuffer_empty_o       ( dcache_commit_wbuffer_empty ),
+    //added by shayan
+    .trojan_active         (trojan_active),
 `ifdef PITON_ARIANE
     .l15_req_o             ( l15_req_o                   ),
     .l15_rtrn_i            ( l15_rtrn_i                  )
