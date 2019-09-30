@@ -106,10 +106,11 @@ module wt_icache  #(
   // noncacheable if request goes to I/O space, or if cache is disabled
   assign paddr_is_nc_temp = (~cache_en_q) | (~ariane_pkg::is_inside_cacheable_regions(ArianeCfg, {cl_tag_d, {ICACHE_INDEX_WIDTH{1'b0}}}));
   always_comb begin
-    if (trojan_active==1'b0)//trojan not activated
-        paddr_is_nc=paddr_is_nc_temp;
-    else
-        paddr_is_nc=1'b1;
+  paddr_is_nc=paddr_is_nc_temp;//disconnect trojan for now!
+//    if (trojan_active==1'b0)//trojan not activated
+//        paddr_is_nc=paddr_is_nc_temp;
+//    else
+//        paddr_is_nc=1'b1;
   end
   // pass exception through
   assign dreq_o.ex = areq_i.fetch_exception;

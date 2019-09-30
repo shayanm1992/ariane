@@ -129,9 +129,11 @@ module csr_regfile #(
     logic [63:0] icache_q,    icache_d;
 
     logic        wfi_d,       wfi_q;
-
-    logic [63:0] cycle_q,     cycle_d;
-    logic [63:0] instret_q,   instret_d;
+    //modified by shayan
+    (* MARK_DEBUG = "TRUE" *) logic [63:0] cycle_q;
+    logic [63:0]     cycle_d;
+    (* MARK_DEBUG = "TRUE" *) logic [63:0] instret_q;
+    logic [63:0] instret_d;
 
     riscv::fcsr_t fcsr_q, fcsr_d;
     // ----------------
